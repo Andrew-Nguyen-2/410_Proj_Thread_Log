@@ -17,6 +17,9 @@ using namespace std;
 //TODO linker errors?  Did you include the pthread library?   And set the proper dialect?
 //TODO declare globals
 
+Logger lg1(LOG_TYPE::LOG_FILE, FILENAME);
+Logger lg2(LOG_TYPE::LOG_CONSOLE);
+
 /***
  * TODO log info to both file and console. You can do this with 2 Logger objects. 
  * 		Note:  These logger objects cannot be local variables, they must be shared 
@@ -26,19 +29,32 @@ using namespace std;
  * returns void
  */
 void fun(string info){
-
+	lg1.Log(info);
+	lg2.Log(info);
 }
 int main() {
 	
 	//TODO start as many threads as you have cores (see std::thread::hardware_concurrency())
 	//TODO save these threads in a vector
 
+	int numbThreads = thread::hardware_concurrency();
+	vector<thread> threads;
+
+	for (int i = 0; i < numbThreads/2; i++){
+		threads.push_back(thread(fun));
+	}
+
 	//TODO let threads run a bit (5 seconds)
 	this_thread::sleep_for(chrono::milliseconds(5000));
 	
 	//TODO ask them all to stop
-	
+	terminate();
+
 	//TODO wait for all threads to finish
 	
+	for (auto& t : threads){
+		t.join();
+	}
+
 	return 0;
 }
