@@ -19,6 +19,7 @@ using namespace std;
 
 Logger lg1(LOG_TYPE::LOG_FILE, FILENAME);
 Logger lg2(LOG_TYPE::LOG_CONSOLE);
+bool doWork = true;
 
 /***
  * TODO log info to both file and console. You can do this with 2 Logger objects. 
@@ -29,8 +30,10 @@ Logger lg2(LOG_TYPE::LOG_CONSOLE);
  * returns void
  */
 void fun(string info){
-	lg1.Log(info);
-	lg2.Log(info);
+	while (doWork){
+		lg1.Log(info);
+		lg2.Log(info);
+	}
 }
 int main() {
 	
@@ -40,15 +43,20 @@ int main() {
 	int numbThreads = thread::hardware_concurrency();
 	vector<thread> threads;
 
-	for (int i = 0; i < numbThreads/2; i++){
-		threads.push_back(thread(fun));
+	for (int i = 1; i < numbThreads/2 + 1; i++){
+		if (i % 2 == 0){
+			threads.push_back(thread(fun, "aaaaa"));
+		}
+		else {
+			threads.push_back(thread(fun, "bbbbb"));
+		}
 	}
 
 	//TODO let threads run a bit (5 seconds)
 	this_thread::sleep_for(chrono::milliseconds(5000));
 	
 	//TODO ask them all to stop
-	terminate();
+	doWork = false;
 
 	//TODO wait for all threads to finish
 	

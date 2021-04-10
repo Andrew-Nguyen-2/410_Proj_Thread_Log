@@ -8,8 +8,6 @@
 #include "../includes/Logger.h"
 using namespace std;
 
-mutex m;
-
 /***
 * creates a logger object, if lt=FILE then log to the file given by fn
 * if lt=LOG_CONSOLE the send log info to console via cout
@@ -25,15 +23,17 @@ Logger::Logger(LOG_TYPE lt, std::string fn): lt(lt), fn(fn){
 * @param info to log
 */
 void Logger::Log(std::string info){
-	m.lock();
-	if (lt==LOG_TYPE::LOG_FILE){
-		fs.open(FILENAME, ios_base::out);
-		fs << info << endl;
+	{
+		lock_guard<mutex> lock(mtx);
+		if (lt==LOG_FILE){
+			fs.open(fn.c_str(), ios_base::out);
+			fs << info << endl;
+		}
+		if (lt==LOG_CONSOLE){
+			cout << info << endl;
+		}
 	}
-	if (lt==LOG_TYPE::LOG_CONSOLE){
-		cout << info << endl;
-	}
-	m.unlock();
+
 
 }
 
@@ -41,5 +41,7 @@ void Logger::Log(std::string info){
 * close any open streams
 */
 Logger::~Logger(){
-	fs.close();
+	if (fs.is_open()){
+		fs.close();
+	}
 }
