@@ -15,26 +15,26 @@ using namespace std;
 * @param fn if above is LOG_FILE then this is where info logged to
 *           otherwise it is not used
 */
-Logger::Logger(LOG_TYPE lt, std::string fn): lt(lt), fn(fn){
+Logger::Logger(LOG_TYPE lt, string fn): lt(lt), fn(fn){
+	if (lt==LOG_FILE){
+		fs.open(fn.c_str(), ios_base::out);
+	}
 }
 
 /***
 * Information to log, either to a file or to console
 * @param info to log
 */
-void Logger::Log(std::string info){
+void Logger::Log(string info){
 	{
 		lock_guard<mutex> lock(mtx);
 		if (lt==LOG_FILE){
-			fs.open(fn.c_str(), ios_base::out);
 			fs << info << endl;
 		}
 		if (lt==LOG_CONSOLE){
 			cout << info << endl;
 		}
 	}
-
-
 }
 
 /***

@@ -35,6 +35,7 @@ void fun(string info){
 		lg2.Log(info);
 	}
 }
+
 int main() {
 	
 	//TODO start as many threads as you have cores (see std::thread::hardware_concurrency())
@@ -42,12 +43,11 @@ int main() {
 
 	int numbThreads = thread::hardware_concurrency();
 	vector<thread> threads;
-
-	for (int i = 1; i < numbThreads/2 + 1; i++){
+	for (int i = 0; i < numbThreads/2; i++){
 		if (i % 2 == 0){
 			threads.push_back(thread(fun, "aaaaa"));
 		}
-		else {
+		else{
 			threads.push_back(thread(fun, "bbbbb"));
 		}
 	}
